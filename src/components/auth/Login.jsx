@@ -1,8 +1,31 @@
-import React, { use } from 'react'
-import AuthContext from '../../context/AuthContext';
+import React, { use, useState } from "react";
+import AuthContext from "../../context/AuthContext";
+import { toast } from "react-toastify";
 
 function Login() {
+  const { loginUser, logOutUser } = use(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  const handleLoginForm = (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    loginUser(email, password)
+    .then(result =>{
+      console.log(result);
+      setLoading(false)
+      toast.success("Login Successfull!")
+    })
+    .catch(err =>{
+      console.log(err.message);
+      setLoading(false);
+      setError(err.message)
+      toast.error(err.message)
+    })
+  };
 
   return (
     <div className="hero bg-base-200 min-h-screen">
@@ -17,7 +40,7 @@ function Login() {
         </div>
         <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
           <div className="card-body">
-            <form className="form">
+            <form onSubmit={handleLoginForm} className="form">
               <label className="label">Email</label>
               <input
                 type="email"
@@ -37,7 +60,17 @@ function Login() {
               <div>
                 <a className="link link-hover">Forgot password?</a>
               </div>
-              <button className="btn btn-neutral mt-4">Login</button>
+              <button
+                disabled={loading}
+                type="submit"
+                className="btn btn-primary mt-4"
+              >
+                {loading ? (
+                  <span className="loading loading-spinner text-primary"></span>
+                ) : (
+                  "Login"
+                )}
+              </button>
             </form>
           </div>
         </div>
@@ -46,4 +79,4 @@ function Login() {
   );
 }
 
-export default Login
+export default Login;

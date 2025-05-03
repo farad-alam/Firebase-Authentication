@@ -1,31 +1,39 @@
-import React, { use, useState } from 'react'
-import { NavLink } from 'react-router';
-import AuthContext from '../../context/AuthContext';
-  import { toast } from "react-toastify";
+import React, { use, useState } from "react";
+import { NavLink } from "react-router";
+import AuthContext from "../../context/AuthContext";
+import { toast } from "react-toastify";
+import { checkPasswordStrength } from "../../utils/authUtils";
 
 function Registration() {
-  const [loading, setLoading] = useState(false)
-    const { createUser } = use(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState([]);
+  const { createUser } = use(AuthContext);
 
-    const handleUserRegistraionForm = (e) => {
-      setLoading(true)
-      e.preventDefault();
-      const email = e.target.email.value
-      const password = e.target.password.value
-      console.log(email, password);
-      createUser(email, password)
-      .then(resutl =>{
-        setLoading(false)
-        console.log(resutl.user);
-        toast.success(`Account Created Succesfully ${resutl.user.email}`)
+  const handleUserRegistraionForm = (e) => {
+    e.preventDefault();
+    setErrors([])
+    setLoading(true);
+    const email = e.target.email.value;
+    const password = e.target.password.value;
 
+    // Check Password Strength
+    // const passwordResult = checkPasswordStrength(password)
+    // if (!passwordResult.success) {
+    //   setErrors(passwordResult.errors)
+    //   setLoading(false)
+    //   return
+    // }
+    createUser(email, password)
+      .then((resutl) => {
+        setLoading(false);
+        toast.success(`Account Created Succesfully ${resutl.user.email}`);
       })
-      .catch(error =>{
+      .catch((error) => {
         setLoading(false);
         console.log(error.message);
-        toast.error(`error.message `);
-      })
-    };
+        toast.error(`${error.message} `);
+      });
+  };
   return (
     <>
       <div className="hero bg-base-200 min-h-screen">
@@ -111,10 +119,21 @@ function Registration() {
               </button>
             </div>
           </div>
+          {errors.length >0  && (
+            <>
+              <div>
+                <ul>
+                  {errors.map((err, i) => (
+                    <li className="text-sm text-red-500" key={i} >{err}</li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
   );
 }
 
-export default Registration
+export default Registration;
