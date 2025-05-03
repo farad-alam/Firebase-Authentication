@@ -1,7 +1,31 @@
-import React from 'react'
+import React, { use, useState } from 'react'
 import { NavLink } from 'react-router';
+import AuthContext from '../../context/AuthContext';
+  import { toast } from "react-toastify";
 
 function Registration() {
+  const [loading, setLoading] = useState(false)
+    const { createUser } = use(AuthContext);
+
+    const handleUserRegistraionForm = (e) => {
+      setLoading(true)
+      e.preventDefault();
+      const email = e.target.email.value
+      const password = e.target.password.value
+      console.log(email, password);
+      createUser(email, password)
+      .then(resutl =>{
+        setLoading(false)
+        console.log(resutl.user);
+        toast.success(`Account Created Succesfully ${resutl.user.email}`)
+
+      })
+      .catch(error =>{
+        setLoading(false);
+        console.log(error.message);
+        toast.error(`error.message `);
+      })
+    };
   return (
     <>
       <div className="hero bg-base-200 min-h-screen">
@@ -16,7 +40,7 @@ function Registration() {
           </div>
           <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
             <div className="card-body">
-              <form className="form">
+              <form className="form" onSubmit={handleUserRegistraionForm}>
                 <label className="label">Email</label>
                 <input
                   type="email"
@@ -39,14 +63,22 @@ function Registration() {
                     Login
                   </NavLink>
                 </div>
-                <button type="submit" className="btn btn-neutral mt-4">
-                  Create Account
+                <button
+                  disabled={loading}
+                  type="submit"
+                  className="btn btn-primary mt-4"
+                >
+                  {loading ? (
+                    <span className="loading loading-spinner text-primary"></span>
+                  ) : (
+                    "Create Account"
+                  )}
                 </button>
               </form>
             </div>
             <div className="divider">OR</div>
             {/* Social Buttons */}
-            <div className='px-4 py-5 w-full'>
+            <div className="px-4 py-5 w-full">
               <button className="btn bg-white text-black border-[#e5e5e5] w-full">
                 <svg
                   aria-label="Google logo"
