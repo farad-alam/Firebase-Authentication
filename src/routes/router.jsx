@@ -5,6 +5,7 @@ import Registration from "../components/auth/Registration";
 import Dashboard from "../components/Dashboard";
 import PrivateRoutes from "./PrivateRoutes";
 import React from "react";
+import Oders from "../components/Oders";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
         element: <PrivateRoutes><Dashboard></Dashboard></PrivateRoutes>,
         // Component: Dashboard,
       },
+      {
+        path: "oders",
+        element: <PrivateRoutes><Oders></Oders></PrivateRoutes>
+      }
     ],
   },
 ]);

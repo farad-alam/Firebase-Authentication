@@ -1,13 +1,14 @@
 import React, { use, useState } from "react";
 import AuthContext from "../../context/AuthContext";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 function Login() {
-  const { loginUser, logOutUser } = use(AuthContext);
+  const { loginUser, logOutUser, signWithGoogle } = use(AuthContext);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const location = useLocation()
 
   const handleLoginForm = (e) => {
     e.preventDefault();
@@ -16,19 +17,21 @@ function Login() {
     const email = e.target.email.value;
     const password = e.target.password.value;
     loginUser(email, password)
-    .then(result =>{
-      console.log(result);
-      setLoading(false)
-      toast.success("Login Successfull!")
-      navigate("/dashboard")
-    })
-    .catch(err =>{
-      console.log(err.message);
-      setLoading(false);
-      setError(err.message)
-      toast.error(err.message)
-    })
+      .then((result) => {
+        console.log(result);
+        setLoading(false);
+        toast.success("Login Successfull!");
+        navigate(location?.state || "/dashboard");
+      })
+      .catch((err) => {
+        console.log(err.message);
+        setLoading(false);
+        setError(err.message);
+        toast.error(err.message);
+      });
   };
+
+  
 
   return (
     <div className="hero bg-base-200 min-h-screen">

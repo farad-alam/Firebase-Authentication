@@ -1,5 +1,5 @@
 import React, { use, useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import AuthContext from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { checkPasswordStrength } from "../../utils/authUtils";
@@ -7,7 +7,8 @@ import { checkPasswordStrength } from "../../utils/authUtils";
 function Registration() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
-  const { createUser } = use(AuthContext);
+  const { createUser, signWithGoogle } = use(AuthContext);
+  const navigate = useNavigate()
 
   const handleUserRegistraionForm = (e) => {
     e.preventDefault();
@@ -27,6 +28,7 @@ function Registration() {
       .then((resutl) => {
         setLoading(false);
         toast.success(`Account Created Succesfully ${resutl.user.email}`);
+        navigate("/dashboard")
       })
       .catch((error) => {
         setLoading(false);
@@ -34,6 +36,23 @@ function Registration() {
         toast.error(`${error.message} `);
       });
   };
+
+
+   const handleGooglePopUpLogin = () => {
+     signWithGoogle()
+       .then((result) => {
+        //  console.log(result);
+         toast.success("Signin with google successfull!");
+         navigate("/dashboard")
+       })
+       .catch((error) => {
+         console.log("Google pop up error", error);
+         toast.error("some Error happend when try to sign with google");
+        
+       });
+   };
+
+
   return (
     <>
       <div className="hero bg-base-200 min-h-screen">
@@ -87,7 +106,10 @@ function Registration() {
             <div className="divider">OR</div>
             {/* Social Buttons */}
             <div className="px-4 py-5 w-full">
-              <button className="btn bg-white text-black border-[#e5e5e5] w-full">
+              <button
+                onClick={handleGooglePopUpLogin}
+                className="btn bg-white text-black border-[#e5e5e5] w-full"
+              >
                 <svg
                   aria-label="Google logo"
                   width="16"
@@ -119,12 +141,14 @@ function Registration() {
               </button>
             </div>
           </div>
-          {errors.length >0  && (
+          {errors.length > 0 && (
             <>
               <div>
                 <ul>
                   {errors.map((err, i) => (
-                    <li className="text-sm text-red-500" key={i} >{err}</li>
+                    <li className="text-sm text-red-500" key={i}>
+                      {err}
+                    </li>
                   ))}
                 </ul>
               </div>
